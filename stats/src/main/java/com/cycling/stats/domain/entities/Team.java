@@ -30,6 +30,5 @@ public class Team extends BaseEntity {
 
     @OneToMany(mappedBy = "team")
     private List<Rider> riders;
-    @OneToOne
-    private Gear gear;
+
 }

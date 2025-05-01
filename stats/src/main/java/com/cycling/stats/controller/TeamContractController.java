@@ -1,6 +1,6 @@
 package com.cycling.stats.controller;
 
-import com.cycling.stats.domain.dtos.TeamContractDto;
+import com.cycling.stats.domain.dtos.teamContractDtos.TeamContractDto;
 import com.cycling.stats.services.TeamContractService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(path = "/api")
+@RequestMapping(path = "${api.prefix}")
 public class TeamContractController {
     private final TeamContractService teamContractService;
 

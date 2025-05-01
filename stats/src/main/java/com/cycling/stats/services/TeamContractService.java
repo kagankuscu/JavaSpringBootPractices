@@ -1,6 +1,6 @@
 package com.cycling.stats.services;
 
-import com.cycling.stats.domain.dtos.TeamContractDto;
+import com.cycling.stats.domain.dtos.teamContractDtos.TeamContractDto;
 
 import java.util.List;
 import java.util.Optional;

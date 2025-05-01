@@ -1,6 +1,6 @@
 package com.cycling.stats.services.impl;
 
-import com.cycling.stats.domain.dtos.TeamContractDto;
+import com.cycling.stats.domain.dtos.teamContractDtos.TeamContractDto;
 import com.cycling.stats.domain.entities.TeamContract;
 import com.cycling.stats.mappers.Mapper;
 import com.cycling.stats.repositories.TeamContractRepository;

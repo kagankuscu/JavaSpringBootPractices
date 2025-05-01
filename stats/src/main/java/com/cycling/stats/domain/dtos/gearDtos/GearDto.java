@@ -1,22 +1,15 @@
-package com.cycling.stats.domain.entities;
+package com.cycling.stats.domain.dtos.gearDtos;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-@Entity
-@Table(name = "gears")
-public class Gear extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@Builder
+public class GearDto {
     private Long id;
     private String bike;
     private String groupset;
@@ -33,8 +26,4 @@ public class Gear extends BaseEntity {
     private String sportNutration;
     private String cyclingComputer;
     private String homeTrainer;
-
-    @OneToOne
-    @JoinColumn(name = "team_id")
-    private Team team;
 }

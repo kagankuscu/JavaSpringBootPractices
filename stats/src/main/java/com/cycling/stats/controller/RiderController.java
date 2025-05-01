@@ -1,8 +1,7 @@
 package com.cycling.stats.controller;
 
-import com.cycling.stats.domain.dtos.RiderDto;
-import com.cycling.stats.domain.dtos.TeamDto;
-import com.cycling.stats.domain.entities.Rider;
+import com.cycling.stats.domain.dtos.riderDtos.AddRiderDto;
+import com.cycling.stats.domain.dtos.riderDtos.RiderDto;
 import com.cycling.stats.services.RiderService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(path = "/api")
+@RequestMapping(path = "${api.prefix}")
 public class RiderController {
     private final RiderService riderService;
 
@@ -31,12 +30,12 @@ public class RiderController {
     }
 
     @PostMapping(path = "/riders")
-    public ResponseEntity<RiderDto> create(@RequestBody RiderDto riderDto) {
+    public ResponseEntity<RiderDto> create(@RequestBody AddRiderDto riderDto) {
         return new ResponseEntity<>(riderService.create(riderDto), HttpStatus.CREATED);
     }
 
     @PostMapping(path = "/riders/list")
-    public ResponseEntity<List<RiderDto>> create(@RequestBody List<RiderDto> riderDtos) {
+    public ResponseEntity<List<RiderDto>> create(@RequestBody List<AddRiderDto> riderDtos) {
         return new ResponseEntity<>(riderService.createList(riderDtos), HttpStatus.CREATED);
     }
 

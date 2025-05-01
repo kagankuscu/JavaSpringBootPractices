@@ -1,7 +1,5 @@
-package com.cycling.stats.domain.dtos;
+package com.cycling.stats.domain.dtos.gearDtos;
 
-import com.cycling.stats.domain.entities.Team;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,8 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GearDto {
-    private Long id;
+public class AddGearDto {
     private String bike;
     private String groupset;
     private String wheel;
@@ -28,6 +25,5 @@ public class GearDto {
     private String sportNutration;
     private String cyclingComputer;
     private String homeTrainer;
-
-//    private TeamDto team;
+    private Long teamId;
 }

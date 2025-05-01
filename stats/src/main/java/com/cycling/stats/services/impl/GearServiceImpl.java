@@ -1,11 +1,11 @@
 package com.cycling.stats.services.impl;
 
-import com.cycling.stats.domain.dtos.GearDto;
+import com.cycling.stats.domain.dtos.gearDtos.AddGearDto;
+import com.cycling.stats.domain.dtos.gearDtos.GearDto;
 import com.cycling.stats.domain.entities.Gear;
 import com.cycling.stats.domain.entities.Team;
 import com.cycling.stats.mappers.Mapper;
 import com.cycling.stats.repositories.GearRepository;
-import com.cycling.stats.repositories.TeamRepository;
 import com.cycling.stats.services.GearService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,8 +19,8 @@ import java.util.Optional;
 public class GearServiceImpl implements GearService {
 
     private final GearRepository gearRepository;
-    private final TeamRepository teamRepository;
     private final Mapper<Gear, GearDto> mapper;
+    private final Mapper<Gear, AddGearDto> addMapper;
 
     @Override
     public List<GearDto> findAll() {
@@ -40,16 +40,33 @@ public class GearServiceImpl implements GearService {
     }
 
     @Override
-    public GearDto create(GearDto gearDto) {
-        Gear gear = mapper.mapTo(gearDto);
+    public GearDto create(AddGearDto gearDto) {
+        Gear gear = addMapper.mapTo(gearDto);
+        if (gearDto.getTeamId() != null) {
+            Team team = Team
+                    .builder()
+                    .id(gearDto.getTeamId())
+                    .build();
+            gear.setTeam(team);
+        }
         return mapper.mapFrom(gearRepository.save(gear));
     }
 
     @Override
-    public List<GearDto> createList(List<GearDto> gearDtos) {
+    public List<GearDto> createList(List<AddGearDto> gearDtos) {
         List<Gear> gears = gearDtos
                 .stream()
-                .map(mapper::mapTo)
+                .map(g -> {
+                    Gear gear = addMapper.mapTo(g);
+                    if (g.getTeamId() != null) {
+                        Team team = Team
+                                .builder()
+                                .id(g.getTeamId())
+                                .build();
+                        gear.setTeam(team);
+                    }
+                    return gear;
+                })
                 .toList();
         return gearRepository.saveAll(gears).stream().map(mapper::mapFrom).toList();
     }
@@ -61,15 +78,6 @@ public class GearServiceImpl implements GearService {
             return Optional.empty();
         }
         Gear gear = mapper.mapTo(gearDto);
-
-//        Team team = teamRepository
-//                .findById(10L)
-//                .orElse(null);
-//        if (team != null) {
-//            team.setGear(gear);
-//        }
-        gear.setTeam(null);
-
         return Optional.ofNullable(mapper.mapFrom(gearRepository.save(gear)));
     }
 

@@ -1,6 +1,7 @@
 package com.cycling.stats.mappers.impl;
 
-import com.cycling.stats.domain.dtos.TeamContractDto;
+import com.cycling.stats.domain.dtos.teamContractDtos.TeamContractDto;
+import com.cycling.stats.domain.entities.Team;
 import com.cycling.stats.domain.entities.TeamContract;
 import com.cycling.stats.mappers.Mapper;
 import lombok.AllArgsConstructor;

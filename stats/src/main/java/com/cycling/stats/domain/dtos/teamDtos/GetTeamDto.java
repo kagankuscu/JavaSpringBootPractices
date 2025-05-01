@@ -1,15 +1,13 @@
-package com.cycling.stats.domain.dtos;
+package com.cycling.stats.domain.dtos.teamDtos;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class TeamDto {
+public class GetTeamDto {
     private Long id;
     private String name;
     private String code;
@@ -17,6 +15,4 @@ public class TeamDto {
     private String nationality;
     private String jerseyImg;
     private Long yearFounded;
-    private List<RiderDto> riders;
-    private GearDto gear;
 }

@@ -1,6 +1,7 @@
 package com.cycling.stats.services;
 
-import com.cycling.stats.domain.dtos.RiderDto;
+import com.cycling.stats.domain.dtos.riderDtos.AddRiderDto;
+import com.cycling.stats.domain.dtos.riderDtos.RiderDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,9 +12,9 @@ public interface RiderService {
 
     Optional<RiderDto> findById(Long id);
 
-    RiderDto create(RiderDto riderDto);
+    RiderDto create(AddRiderDto riderDto);
 
-    List<RiderDto> createList(List<RiderDto> riderDtos);
+    List<RiderDto> createList(List<AddRiderDto> riderDtos);
 
     Optional<RiderDto> update(Long id, RiderDto riderDto);
 

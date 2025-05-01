@@ -1,6 +1,6 @@
-package com.cycling.stats.mappers.impl;
+package com.cycling.stats.mappers.impl.RiderMapper;
 
-import com.cycling.stats.domain.dtos.RiderDto;
+import com.cycling.stats.domain.dtos.riderDtos.RiderDto;
 import com.cycling.stats.domain.entities.Rider;
 import com.cycling.stats.mappers.Mapper;
 import lombok.AllArgsConstructor;

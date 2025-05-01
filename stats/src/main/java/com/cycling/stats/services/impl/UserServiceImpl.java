@@ -10,6 +10,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -38,5 +41,15 @@ public class UserServiceImpl implements UserService {
         }
 
         return  "Failed";
+    }
+
+    @Override
+    public Optional<Users> findUserById(Integer id) {
+        return userRepository.findById(id);
+    }
+
+    @Override
+    public List<Users> findAll() {
+        return userRepository.findAll();
     }
 }

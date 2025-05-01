@@ -1,6 +1,6 @@
-package com.cycling.stats.mappers.impl;
+package com.cycling.stats.mappers.impl.GearMapper;
 
-import com.cycling.stats.domain.dtos.GearDto;
+import com.cycling.stats.domain.dtos.gearDtos.GearDto;
 import com.cycling.stats.domain.entities.Gear;
 import com.cycling.stats.mappers.Mapper;
 import lombok.AllArgsConstructor;
@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 public class GearMapperImpl implements Mapper<Gear, GearDto> {
+
     private final ModelMapper modelMapper;
 
     @Override

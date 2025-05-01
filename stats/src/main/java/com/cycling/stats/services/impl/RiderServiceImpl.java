@@ -1,7 +1,9 @@
 package com.cycling.stats.services.impl;
 
-import com.cycling.stats.domain.dtos.RiderDto;
+import com.cycling.stats.domain.dtos.riderDtos.AddRiderDto;
+import com.cycling.stats.domain.dtos.riderDtos.RiderDto;
 import com.cycling.stats.domain.entities.Rider;
+import com.cycling.stats.domain.entities.Team;
 import com.cycling.stats.mappers.Mapper;
 import com.cycling.stats.repositories.RiderRepository;
 import com.cycling.stats.services.RiderService;
@@ -17,6 +19,7 @@ import java.util.Optional;
 public class RiderServiceImpl implements RiderService {
     private final RiderRepository riderRepository;
     private final Mapper<Rider, RiderDto> mapper;
+    private final Mapper<Rider, AddRiderDto> addMapper;
 
     @Override
     public List<RiderDto> findAll() {
@@ -36,18 +39,31 @@ public class RiderServiceImpl implements RiderService {
     }
 
     @Override
-    public RiderDto create(RiderDto riderDto) {
-        Rider rider = mapper.mapTo(riderDto);
-        rider.setTeam(null);
+    public RiderDto create(AddRiderDto riderDto) {
+        Rider rider = addMapper.mapTo(riderDto);
+        if (riderDto.getTeamId() != null) {
+            Team team = Team.builder()
+                    .id(riderDto.getTeamId())
+                    .build();
+            rider.setTeam(team);
+        }
         return mapper.mapFrom(riderRepository.save(rider));
     }
 
     @Override
-    public List<RiderDto> createList(List<RiderDto> riderDtos) {
+    public List<RiderDto> createList(List<AddRiderDto> riderDtos) {
         List<Rider> riders = riderDtos
                 .stream()
-                .map(mapper::mapTo)
-                .peek(rider -> rider.setTeam(null))
+                .map(r -> {
+                    Rider rider = addMapper.mapTo(r);
+                    if (r.getTeamId() != null) {
+                        Team team = Team.builder()
+                                .id(r.getTeamId())
+                                .build();
+                        rider.setTeam(team);
+                    }
+                    return rider;
+                })
                 .toList();
         return riderRepository.saveAll(riders).stream().map(mapper::mapFrom).toList();
     }
@@ -59,7 +75,6 @@ public class RiderServiceImpl implements RiderService {
             return Optional.empty();
         }
         Rider rider = mapper.mapTo(riderDto);
-        rider.setTeam(null);
 
         return Optional.ofNullable(mapper.mapFrom(riderRepository.save(rider)));
     }
@@ -79,7 +94,6 @@ public class RiderServiceImpl implements RiderService {
                     Optional.ofNullable(riderDto.getNationality()).ifPresent(rider::setNationality);
                     Optional.ofNullable(riderDto.getWeight()).ifPresent(rider::setWeight);
                     Optional.ofNullable(riderDto.getHeight()).ifPresent(rider::setHeight);
-                    rider.setTeam(null);
                     rider.setModifiedDate(LocalDateTime.now());
                     return mapper.mapFrom(riderRepository.save(rider));
                 });

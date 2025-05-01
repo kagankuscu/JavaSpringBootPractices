@@ -1,24 +1,26 @@
 package com.cycling.stats.services;
 
-import com.cycling.stats.domain.dtos.TeamDto;
+import com.cycling.stats.domain.dtos.teamDtos.AddTeamDto;
+import com.cycling.stats.domain.dtos.teamDtos.GetTeamDto;
+import com.cycling.stats.domain.dtos.teamDtos.UpdateTeamDto;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface TeamService {
-    List<TeamDto> findAll();
+    List<GetTeamDto> findAll();
 
-    Optional<TeamDto> findById(Long id);
+    Optional<GetTeamDto> findById(Long id);
 
-    TeamDto create(TeamDto teamDto);
+    GetTeamDto create(AddTeamDto addTeamDto);
 
-    List<TeamDto> createList(List<TeamDto> teamsDto);
+    List<GetTeamDto> createList(List<AddTeamDto> addTeamDtos);
 
-    Optional<TeamDto> update(Long id, TeamDto teamDto);
+    Optional<GetTeamDto> update(Long id, UpdateTeamDto updateTeamDto);
 
-    Optional<TeamDto> partialUpdate(Long id, TeamDto teamDto);
+    Optional<GetTeamDto> partialUpdate(Long id, UpdateTeamDto updateTeamDto);
 
     boolean delete(Long id);
 
-    Optional<TeamDto> softDelete(Long id);
+    Optional<GetTeamDto> softDelete(Long id);
 }
