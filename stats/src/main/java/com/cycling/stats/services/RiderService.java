@@ -1,26 +1,27 @@
 package com.cycling.stats.services;
 
 import com.cycling.stats.domain.dtos.riderDtos.AddRiderDto;
-import com.cycling.stats.domain.dtos.riderDtos.RiderDto;
+import com.cycling.stats.domain.dtos.riderDtos.GetRiderDto;
+import com.cycling.stats.domain.dtos.riderDtos.UpdateRiderDto;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface RiderService {
 
-    List<RiderDto> findAll();
+    List<GetRiderDto> findAll();
 
-    Optional<RiderDto> findById(Long id);
+    Optional<GetRiderDto> findById(Long id);
 
-    RiderDto create(AddRiderDto riderDto);
+    GetRiderDto create(AddRiderDto riderDto);
 
-    List<RiderDto> createList(List<AddRiderDto> riderDtos);
+    List<GetRiderDto> createList(List<AddRiderDto> riderDtos);
 
-    Optional<RiderDto> update(Long id, RiderDto riderDto);
+    Optional<GetRiderDto> update(Long id, UpdateRiderDto updateRiderDto);
 
-    Optional<RiderDto> partialUpdate(Long id, RiderDto riderDto);
+    Optional<GetRiderDto> partialUpdate(Long id, UpdateRiderDto updateRiderDto);
 
     boolean delete(Long id);
 
-    Optional<RiderDto> softDelete(Long id);
+    Optional<GetRiderDto> softDelete(Long id);
 }

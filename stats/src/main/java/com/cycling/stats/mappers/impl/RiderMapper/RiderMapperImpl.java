@@ -1,6 +1,6 @@
 package com.cycling.stats.mappers.impl.RiderMapper;
 
-import com.cycling.stats.domain.dtos.riderDtos.RiderDto;
+import com.cycling.stats.domain.dtos.riderDtos.GetRiderDto;
 import com.cycling.stats.domain.entities.Rider;
 import com.cycling.stats.mappers.Mapper;
 import lombok.AllArgsConstructor;
@@ -9,17 +9,17 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class RiderMapperImpl implements Mapper<Rider, RiderDto> {
+public class RiderMapperImpl implements Mapper<Rider, GetRiderDto> {
 
     private final ModelMapper modelMapper;
 
     @Override
-    public Rider mapTo(RiderDto riderDto) {
-        return modelMapper.map(riderDto, Rider.class);
+    public Rider mapTo(GetRiderDto getRiderDto) {
+        return modelMapper.map(getRiderDto, Rider.class);
     }
 
     @Override
-    public RiderDto mapFrom(Rider rider) {
-        return modelMapper.map(rider, RiderDto.class);
+    public GetRiderDto mapFrom(Rider rider) {
+        return modelMapper.map(rider, GetRiderDto.class);
     }
 }

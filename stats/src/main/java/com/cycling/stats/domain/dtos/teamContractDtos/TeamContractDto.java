@@ -1,6 +1,6 @@
 package com.cycling.stats.domain.dtos.teamContractDtos;
 
-import com.cycling.stats.domain.dtos.riderDtos.RiderDto;
+import com.cycling.stats.domain.dtos.riderDtos.GetRiderDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,5 +18,5 @@ public class TeamContractDto {
     private String name;
     private Long year;
 
-    private List<RiderDto> riders;
+    private List<GetRiderDto> riders;
 }

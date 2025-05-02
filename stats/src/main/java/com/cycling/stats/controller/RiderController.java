@@ -1,7 +1,8 @@
 package com.cycling.stats.controller;
 
 import com.cycling.stats.domain.dtos.riderDtos.AddRiderDto;
-import com.cycling.stats.domain.dtos.riderDtos.RiderDto;
+import com.cycling.stats.domain.dtos.riderDtos.GetRiderDto;
+import com.cycling.stats.domain.dtos.riderDtos.UpdateRiderDto;
 import com.cycling.stats.services.RiderService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,12 +18,12 @@ public class RiderController {
     private final RiderService riderService;
 
     @GetMapping(path = "/riders")
-    public List<RiderDto> findAll() {
+    public List<GetRiderDto> findAll() {
         return riderService.findAll();
     }
 
     @GetMapping(path = "/riders/{id}")
-    public ResponseEntity<RiderDto> findById(@PathVariable("id") Long id) {
+    public ResponseEntity<GetRiderDto> findById(@PathVariable("id") Long id) {
         return riderService
                 .findById(id)
                 .map(rider -> { return new ResponseEntity<>(rider, HttpStatus.OK); })
@@ -30,35 +31,35 @@ public class RiderController {
     }
 
     @PostMapping(path = "/riders")
-    public ResponseEntity<RiderDto> create(@RequestBody AddRiderDto riderDto) {
+    public ResponseEntity<GetRiderDto> create(@RequestBody AddRiderDto riderDto) {
         return new ResponseEntity<>(riderService.create(riderDto), HttpStatus.CREATED);
     }
 
     @PostMapping(path = "/riders/list")
-    public ResponseEntity<List<RiderDto>> create(@RequestBody List<AddRiderDto> riderDtos) {
+    public ResponseEntity<List<GetRiderDto>> create(@RequestBody List<AddRiderDto> riderDtos) {
         return new ResponseEntity<>(riderService.createList(riderDtos), HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/riders/{id}")
-    public ResponseEntity<RiderDto> update(@PathVariable("id") Long id,
-                                           @RequestBody RiderDto riderDto) {
+    public ResponseEntity<GetRiderDto> update(@PathVariable("id") Long id,
+                                              @RequestBody UpdateRiderDto updateRiderDto) {
         return riderService
-                .update(id, riderDto)
+                .update(id, updateRiderDto)
                 .map(rider -> new ResponseEntity<>(rider, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PatchMapping(path = "/riders/{id}")
-    public ResponseEntity<RiderDto> partialUpdate(@PathVariable("id") Long id,
-                                                  @RequestBody RiderDto riderDto) {
+    public ResponseEntity<GetRiderDto> partialUpdate(@PathVariable("id") Long id,
+                                                     @RequestBody UpdateRiderDto updateRiderDto) {
         return riderService
-                .partialUpdate(id, riderDto)
+                .partialUpdate(id, updateRiderDto)
                 .map(rider -> new ResponseEntity<>(rider, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping(path = "/riders/{id}")
-    public ResponseEntity<RiderDto> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<GetRiderDto> delete(@PathVariable("id") Long id) {
         if (!riderService.delete(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -66,7 +67,7 @@ public class RiderController {
     }
 
     @PutMapping(path = "/riders/{id}/delete")
-    public ResponseEntity<RiderDto> softDelete(@PathVariable("id") Long id) {
+    public ResponseEntity<GetRiderDto> softDelete(@PathVariable("id") Long id) {
         return riderService
                 .softDelete(id)
                 .map(riderDto -> new ResponseEntity<>(riderDto, HttpStatus.OK))

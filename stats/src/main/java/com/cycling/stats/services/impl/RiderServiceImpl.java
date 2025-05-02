@@ -1,7 +1,8 @@
 package com.cycling.stats.services.impl;
 
 import com.cycling.stats.domain.dtos.riderDtos.AddRiderDto;
-import com.cycling.stats.domain.dtos.riderDtos.RiderDto;
+import com.cycling.stats.domain.dtos.riderDtos.GetRiderDto;
+import com.cycling.stats.domain.dtos.riderDtos.UpdateRiderDto;
 import com.cycling.stats.domain.entities.Rider;
 import com.cycling.stats.domain.entities.Team;
 import com.cycling.stats.mappers.Mapper;
@@ -18,11 +19,12 @@ import java.util.Optional;
 @AllArgsConstructor
 public class RiderServiceImpl implements RiderService {
     private final RiderRepository riderRepository;
-    private final Mapper<Rider, RiderDto> mapper;
+    private final Mapper<Rider, GetRiderDto> mapper;
     private final Mapper<Rider, AddRiderDto> addMapper;
+    private final Mapper<Rider, UpdateRiderDto> updateMapper;
 
     @Override
-    public List<RiderDto> findAll() {
+    public List<GetRiderDto> findAll() {
         return riderRepository
                 .findAllNotDeleted()
                 .stream()
@@ -31,7 +33,7 @@ public class RiderServiceImpl implements RiderService {
     }
 
     @Override
-    public Optional<RiderDto> findById(Long id) {
+    public Optional<GetRiderDto> findById(Long id) {
         return riderRepository
                 .findById(id)
                 .filter(rider -> !rider.getDeleted())
@@ -39,7 +41,7 @@ public class RiderServiceImpl implements RiderService {
     }
 
     @Override
-    public RiderDto create(AddRiderDto riderDto) {
+    public GetRiderDto create(AddRiderDto riderDto) {
         Rider rider = addMapper.mapTo(riderDto);
         if (riderDto.getTeamId() != null) {
             Team team = Team.builder()
@@ -51,7 +53,7 @@ public class RiderServiceImpl implements RiderService {
     }
 
     @Override
-    public List<RiderDto> createList(List<AddRiderDto> riderDtos) {
+    public List<GetRiderDto> createList(List<AddRiderDto> riderDtos) {
         List<Rider> riders = riderDtos
                 .stream()
                 .map(r -> {
@@ -69,32 +71,54 @@ public class RiderServiceImpl implements RiderService {
     }
 
     @Override
-    public Optional<RiderDto> update(Long id, RiderDto riderDto) {
-        riderDto.setId(id);
-        if (!riderRepository.existsById(id)) {
+    public Optional<GetRiderDto> update(Long id, UpdateRiderDto updateRiderDto) {
+        updateRiderDto.setId(id);
+        Optional<Rider> realRider = riderRepository
+                .findById(updateRiderDto.getId())
+                .filter(r -> !r.getDeleted());
+        if (realRider.isEmpty()) {
             return Optional.empty();
         }
-        Rider rider = mapper.mapTo(riderDto);
+
+        Rider rider = updateMapper.mapTo(updateRiderDto);
+        if (updateRiderDto.getTeamId() != null) {
+            Team team = Team
+                    .builder()
+                    .id(updateRiderDto.getTeamId())
+                    .build();
+            rider.setTeam(team);
+        }
 
         return Optional.ofNullable(mapper.mapFrom(riderRepository.save(rider)));
     }
 
     @Override
-    public Optional<RiderDto> partialUpdate(Long id, RiderDto riderDto) {
-        riderDto.setId(id);
-        if (!riderRepository.existsById(id)) {
+    public Optional<GetRiderDto> partialUpdate(Long id, UpdateRiderDto updateRiderDto) {
+        updateRiderDto.setId(id);
+        Optional<Rider> realRider = riderRepository
+                .findById(updateRiderDto.getId())
+                .filter(r -> !r.getDeleted());
+        if (realRider.isEmpty()) {
             return Optional.empty();
         }
-
+        if (updateRiderDto.getTeamId() != null) {
+            Team team = Team
+                    .builder()
+                    .id(updateRiderDto.getTeamId())
+                    .build();
+            realRider
+                    .get()
+                    .setTeam(team);
+        }
         return riderRepository
                 .findById(id)
                 .map(rider -> {
-                    Optional.ofNullable(riderDto.getFullName()).ifPresent(rider::setFullName);
-                    Optional.ofNullable(riderDto.getBirthdate()).ifPresent(rider::setBirthdate);
-                    Optional.ofNullable(riderDto.getNationality()).ifPresent(rider::setNationality);
-                    Optional.ofNullable(riderDto.getWeight()).ifPresent(rider::setWeight);
-                    Optional.ofNullable(riderDto.getHeight()).ifPresent(rider::setHeight);
-                    rider.setModifiedDate(LocalDateTime.now());
+                    Optional.ofNullable(updateRiderDto.getFullName()).ifPresent(rider::setFullName);
+                    Optional.ofNullable(updateRiderDto.getBirthdate()).ifPresent(rider::setBirthdate);
+                    Optional.ofNullable(updateRiderDto.getNationality()).ifPresent(rider::setNationality);
+                    Optional.ofNullable(updateRiderDto.getWeight()).ifPresent(rider::setWeight);
+                    Optional.ofNullable(updateRiderDto.getHeight()).ifPresent(rider::setHeight);
+                    Optional.ofNullable(realRider.get().getTeam()).ifPresent(rider::setTeam);
                     return mapper.mapFrom(riderRepository.save(rider));
                 });
     }
@@ -110,7 +134,7 @@ public class RiderServiceImpl implements RiderService {
     }
 
     @Override
-    public Optional<RiderDto> softDelete(Long id) {
+    public Optional<GetRiderDto> softDelete(Long id) {
         if (!riderRepository.existsById(id)) {
             return Optional.empty();
         }
