@@ -5,11 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Data
 @Builder
-public class GearDto {
+public class UpdateGearDto {
     private Long id;
     private String bike;
     private String groupset;
@@ -26,4 +26,5 @@ public class GearDto {
     private String sportNutration;
     private String cyclingComputer;
     private String homeTrainer;
+    private Long teamId;
 }

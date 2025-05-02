@@ -1,11 +1,11 @@
 package com.cycling.stats.controller;
 
 import com.cycling.stats.domain.dtos.gearDtos.AddGearDto;
-import com.cycling.stats.domain.dtos.gearDtos.GearDto;
-import com.cycling.stats.domain.dtos.teamDtos.AddTeamDto;
-import com.cycling.stats.domain.entities.Gear;
+import com.cycling.stats.domain.dtos.gearDtos.GetGearDto;
+import com.cycling.stats.domain.dtos.gearDtos.UpdateGearDto;
 import com.cycling.stats.services.GearService;
 import lombok.AllArgsConstructor;
+import org.hibernate.sql.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +19,12 @@ public class GearController {
     private final GearService gearService;
 
     @GetMapping(path = "/gears")
-    public List<GearDto> findAll() {
+    public List<GetGearDto> findAll() {
         return gearService.findAll();
     }
 
     @GetMapping(path = "/gears/{id}")
-    public ResponseEntity<GearDto> findById(@PathVariable("id") Long id) {
+    public ResponseEntity<GetGearDto> findById(@PathVariable("id") Long id) {
         return gearService
                 .findById(id)
                 .map(rider -> { return new ResponseEntity<>(rider, HttpStatus.OK); })
@@ -32,35 +32,35 @@ public class GearController {
     }
 
     @PostMapping(path = "/gears")
-    public ResponseEntity<GearDto> create(@RequestBody AddGearDto gearDto) {
+    public ResponseEntity<GetGearDto> create(@RequestBody AddGearDto gearDto) {
         return new ResponseEntity<>(gearService.create(gearDto), HttpStatus.CREATED);
     }
 
     @PostMapping(path = "/gears/list")
-    public ResponseEntity<List<GearDto>> create(@RequestBody List<AddGearDto> gearDtos) {
+    public ResponseEntity<List<GetGearDto>> create(@RequestBody List<AddGearDto> gearDtos) {
         return new ResponseEntity<>(gearService.createList(gearDtos), HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/gears/{id}")
-    public ResponseEntity<GearDto> update(@PathVariable("id") Long id,
-                                           @RequestBody GearDto gearDto) {
+    public ResponseEntity<GetGearDto> update(@PathVariable("id") Long id,
+                                             @RequestBody UpdateGearDto updateGearDto) {
         return gearService
-                .update(id, gearDto)
+                .update(id, updateGearDto)
                 .map(rider -> new ResponseEntity<>(rider, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PatchMapping(path = "/gears/{id}")
-    public ResponseEntity<GearDto> partialUpdate(@PathVariable("id") Long id,
-                                                  @RequestBody GearDto gearDto) {
+    public ResponseEntity<GetGearDto> partialUpdate(@PathVariable("id") Long id,
+                                                    @RequestBody UpdateGearDto updateGearDto) {
         return gearService
-                .partialUpdate(id, gearDto)
+                .partialUpdate(id, updateGearDto)
                 .map(rider -> new ResponseEntity<>(rider, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping(path = "/gears/{id}")
-    public ResponseEntity<GearDto> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<GetGearDto> delete(@PathVariable("id") Long id) {
         if (!gearService.delete(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -68,10 +68,10 @@ public class GearController {
     }
 
     @PutMapping(path = "/gears/{id}/delete")
-    public ResponseEntity<GearDto> softDelete(@PathVariable("id") Long id) {
+    public ResponseEntity<GetGearDto> softDelete(@PathVariable("id") Long id) {
         return gearService
                 .softDelete(id)
-                .map(gearDto -> new ResponseEntity<>(gearDto, HttpStatus.OK))
+                .map(getGearDto -> new ResponseEntity<>(getGearDto, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }

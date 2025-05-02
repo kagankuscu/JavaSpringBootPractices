@@ -1,26 +1,28 @@
 package com.cycling.stats.services;
 
 import com.cycling.stats.domain.dtos.gearDtos.AddGearDto;
-import com.cycling.stats.domain.dtos.gearDtos.GearDto;
+import com.cycling.stats.domain.dtos.gearDtos.GetGearDto;
+import com.cycling.stats.domain.dtos.gearDtos.UpdateGearDto;
+import org.hibernate.sql.Update;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface GearService {
 
-    List<GearDto> findAll();
+    List<GetGearDto> findAll();
 
-    Optional<GearDto> findById(Long id);
+    Optional<GetGearDto> findById(Long id);
 
-    GearDto create(AddGearDto gearDto);
+    GetGearDto create(AddGearDto gearDto);
 
-    List<GearDto> createList(List<AddGearDto> gearsDto);
+    List<GetGearDto> createList(List<AddGearDto> gearsDto);
 
-    Optional<GearDto> update(Long id, GearDto gearDto);
+    Optional<GetGearDto> update(Long id, UpdateGearDto updateGearDto);
 
-    Optional<GearDto> partialUpdate(Long id, GearDto gearDto);
+    Optional<GetGearDto> partialUpdate(Long id, UpdateGearDto updateGearDto);
 
     boolean delete(Long id);
 
-    Optional<GearDto> softDelete(Long id);
+    Optional<GetGearDto> softDelete(Long id);
 }
