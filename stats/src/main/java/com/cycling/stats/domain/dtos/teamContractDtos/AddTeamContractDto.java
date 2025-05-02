@@ -1,6 +1,5 @@
 package com.cycling.stats.domain.dtos.teamContractDtos;
 
-import com.cycling.stats.domain.dtos.riderDtos.GetRiderDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,11 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TeamContractDto {
-
-    private Long id;
+public class AddTeamContractDto {
     private String name;
     private Long year;
 
-    private List<GetRiderDto> riders;
+    private List<Long> riderIds;
 }

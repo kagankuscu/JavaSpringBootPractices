@@ -1,24 +1,26 @@
 package com.cycling.stats.services;
 
-import com.cycling.stats.domain.dtos.teamContractDtos.TeamContractDto;
+import com.cycling.stats.domain.dtos.teamContractDtos.AddTeamContractDto;
+import com.cycling.stats.domain.dtos.teamContractDtos.GetTeamContractDto;
+import com.cycling.stats.domain.dtos.teamContractDtos.UpdateTeamContractDto;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface TeamContractService {
-    List<TeamContractDto> findAll();
+    List<GetTeamContractDto> findAll();
 
-    Optional<TeamContractDto> findById(Long id);
+    Optional<GetTeamContractDto> findById(Long id);
 
-    TeamContractDto create(TeamContractDto teamContractDto);
+    GetTeamContractDto create(AddTeamContractDto addTeamContractDto);
 
-    List<TeamContractDto> createList(List<TeamContractDto> teamContractDtos);
+    List<GetTeamContractDto> createList(List<AddTeamContractDto> addTeamContractDtos);
 
-    Optional<TeamContractDto> update(Long id, TeamContractDto teamContractDto);
+    Optional<GetTeamContractDto> update(Long id, UpdateTeamContractDto updateTeamContractDto);
 
-    Optional<TeamContractDto> partialUpdate(Long id, TeamContractDto teamContractDto);
+    Optional<GetTeamContractDto> partialUpdate(Long id, UpdateTeamContractDto updateTeamContractDto);
 
     boolean delete(Long id);
 
-    Optional<TeamContractDto> softDelete(Long id);
+    Optional<GetTeamContractDto> softDelete(Long id);
 }
