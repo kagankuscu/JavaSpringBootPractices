@@ -12,17 +12,17 @@ public interface GearService {
 
     List<GetGearDto> findAll();
 
-    Optional<GetGearDto> findById(Long id);
+    GetGearDto findById(Long id);
 
     GetGearDto create(AddGearDto gearDto);
 
     List<GetGearDto> createList(List<AddGearDto> gearsDto);
 
-    Optional<GetGearDto> update(Long id, UpdateGearDto updateGearDto);
+    GetGearDto update(Long id, UpdateGearDto updateGearDto);
 
-    Optional<GetGearDto> partialUpdate(Long id, UpdateGearDto updateGearDto);
+    GetGearDto partialUpdate(Long id, UpdateGearDto updateGearDto);
 
-    boolean delete(Long id);
+    void delete(Long id);
 
-    Optional<GetGearDto> softDelete(Long id);
+    GetGearDto softDelete(Long id);
 }

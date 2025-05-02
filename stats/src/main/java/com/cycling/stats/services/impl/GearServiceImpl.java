@@ -5,6 +5,8 @@ import com.cycling.stats.domain.dtos.gearDtos.GetGearDto;
 import com.cycling.stats.domain.dtos.gearDtos.UpdateGearDto;
 import com.cycling.stats.domain.entities.Gear;
 import com.cycling.stats.domain.entities.Team;
+import com.cycling.stats.exceptions.ResourceNotFoundException;
+import com.cycling.stats.exceptions.UpdateIdNotEqualGivenException;
 import com.cycling.stats.mappers.Mapper;
 import com.cycling.stats.repositories.GearRepository;
 import com.cycling.stats.services.GearService;
@@ -35,11 +37,12 @@ public class GearServiceImpl implements GearService {
     }
 
     @Override
-    public Optional<GetGearDto> findById(Long id) {
+    public GetGearDto findById(Long id) {
         return gearRepository
                 .findById(id)
                 .filter(gear -> !gear.getDeleted())
-                .map(mapper::mapFrom);
+                .map(mapper::mapFrom)
+                .orElseThrow(() -> new ResourceNotFoundException("Gear Not Found. Id: " + id));
     }
 
     @Override
@@ -75,14 +78,17 @@ public class GearServiceImpl implements GearService {
     }
 
     @Override
-    public Optional<GetGearDto> update(Long id, UpdateGearDto updateGearDto) {
-        updateGearDto.setId(id);
-        Optional<Gear> foundNotDeletedGear = gearRepository
+    public GetGearDto update(Long id, UpdateGearDto updateGearDto) {
+        if (!id.equals(updateGearDto.getId()))
+            throw new UpdateIdNotEqualGivenException("Given id: "
+                    + id
+                    + " Body id: " + updateGearDto.getId() + " is not equals.");
+
+        gearRepository
                 .findById(id)
-                .filter(g -> !g.getDeleted());
-        if (!gearRepository.existsById(id) || foundNotDeletedGear.isEmpty()) {
-            return Optional.empty();
-        }
+                .filter(g -> !g.getDeleted())
+                .orElseThrow(() -> new ResourceNotFoundException("Gear Not Found. Id: " + id));
+
         Gear gear = updateMapper.mapTo(updateGearDto);
         if (updateGearDto.getTeamId() != null) {
             Team team = Team
@@ -91,21 +97,19 @@ public class GearServiceImpl implements GearService {
                     .build();
             gear.setTeam(team);
         }
-        return Optional.ofNullable(mapper.mapFrom(gearRepository.save(gear)));
+        return mapper.mapFrom(gearRepository.save(gear));
     }
 
     @Override
-    public Optional<GetGearDto> partialUpdate(Long id, UpdateGearDto updateGearDto) {
-        updateGearDto.setId(id);
-        Optional<Gear> foundNotDeletedGear = gearRepository
-                .findById(id)
-                .filter(g -> !g.getDeleted());
-        if (!gearRepository.existsById(id) || foundNotDeletedGear.isEmpty()) {
-            return Optional.empty();
-        }
+    public GetGearDto partialUpdate(Long id, UpdateGearDto updateGearDto) {
+        if (id.equals(updateGearDto.getId()))
+            throw new UpdateIdNotEqualGivenException("Given id: "
+                    + id
+                    + " Body id: " + updateGearDto.getId() + " is not equals.");
 
         return gearRepository
                 .findById(id)
+                .filter(g -> !g.getDeleted())
                 .map(gear -> {
                     Optional.ofNullable(updateGearDto.getBike()).ifPresent(gear::setBike);
                     Optional.ofNullable(updateGearDto.getGroupset()).ifPresent(gear::setGroupset);
@@ -123,27 +127,24 @@ public class GearServiceImpl implements GearService {
                     Optional.ofNullable(updateGearDto.getCyclingComputer()).ifPresent(gear::setCyclingComputer);
                     Optional.ofNullable(updateGearDto.getHomeTrainer()).ifPresent(gear::setHomeTrainer);
                     return mapper.mapFrom(gearRepository.save(gear));
-                });
+                })
+                .orElseThrow(() -> new ResourceNotFoundException("Gear Not Found. Id: " + id));
     }
 
     @Override
-    public boolean delete(Long id) {
+    public void delete(Long id) {
         if (!gearRepository.existsById(id)) {
-            return false;
+            throw new ResourceNotFoundException("Gear Not Found. Id: " + id);
         }
-
         gearRepository.deleteById(id);
-        return true;
     }
 
     @Override
-    public Optional<GetGearDto> softDelete(Long id) {
-        if (!gearRepository.existsById(id)) {
-            return Optional.empty();
-        }
+    public GetGearDto softDelete(Long id) {
         gearRepository.softDelete(id);
         return gearRepository
                 .findById(id)
-                .map(mapper::mapFrom);
+                .map(mapper::mapFrom)
+                .orElseThrow(() -> new ResourceNotFoundException("Gear Not Found. Id: " + id));
     }
 }

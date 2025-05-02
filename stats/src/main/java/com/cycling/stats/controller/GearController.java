@@ -3,6 +3,9 @@ package com.cycling.stats.controller;
 import com.cycling.stats.domain.dtos.gearDtos.AddGearDto;
 import com.cycling.stats.domain.dtos.gearDtos.GetGearDto;
 import com.cycling.stats.domain.dtos.gearDtos.UpdateGearDto;
+import com.cycling.stats.exceptions.ResourceNotFoundException;
+import com.cycling.stats.exceptions.UpdateIdNotEqualGivenException;
+import com.cycling.stats.response.ApiResponse;
 import com.cycling.stats.services.GearService;
 import lombok.AllArgsConstructor;
 import org.hibernate.sql.Update;
@@ -19,59 +22,76 @@ public class GearController {
     private final GearService gearService;
 
     @GetMapping(path = "/gears")
-    public List<GetGearDto> findAll() {
-        return gearService.findAll();
+    public ApiResponse findAll() {
+        return new ApiResponse("success", gearService.findAll());
     }
 
     @GetMapping(path = "/gears/{id}")
-    public ResponseEntity<GetGearDto> findById(@PathVariable("id") Long id) {
-        return gearService
-                .findById(id)
-                .map(rider -> { return new ResponseEntity<>(rider, HttpStatus.OK); })
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<ApiResponse> findById(@PathVariable("id") Long id) {
+        try {
+            return new ResponseEntity<>(new ApiResponse("success", gearService.findById(id)), HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping(path = "/gears")
-    public ResponseEntity<GetGearDto> create(@RequestBody AddGearDto gearDto) {
-        return new ResponseEntity<>(gearService.create(gearDto), HttpStatus.CREATED);
+    public ResponseEntity<ApiResponse> create(@RequestBody AddGearDto gearDto) {
+        try {
+            return new ResponseEntity<>(new ApiResponse("success", gearService.create(gearDto)),
+                    HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping(path = "/gears/list")
-    public ResponseEntity<List<GetGearDto>> create(@RequestBody List<AddGearDto> gearDtos) {
-        return new ResponseEntity<>(gearService.createList(gearDtos), HttpStatus.CREATED);
+    public ResponseEntity<ApiResponse> create(@RequestBody List<AddGearDto> gearDtos) {
+        try {
+            return new ResponseEntity<>(
+                    new ApiResponse("success", gearService.createList(gearDtos)),
+                    HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping(path = "/gears/{id}")
-    public ResponseEntity<GetGearDto> update(@PathVariable("id") Long id,
+    public ResponseEntity<ApiResponse> update(@PathVariable("id") Long id,
                                              @RequestBody UpdateGearDto updateGearDto) {
-        return gearService
-                .update(id, updateGearDto)
-                .map(rider -> new ResponseEntity<>(rider, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        try {
+            return new ResponseEntity<>(new ApiResponse("success", gearService.update(id, updateGearDto)), HttpStatus.OK);
+        } catch (ResourceNotFoundException | UpdateIdNotEqualGivenException e) {
+            return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);
+        }
     }
 
     @PatchMapping(path = "/gears/{id}")
-    public ResponseEntity<GetGearDto> partialUpdate(@PathVariable("id") Long id,
+    public ResponseEntity<ApiResponse> partialUpdate(@PathVariable("id") Long id,
                                                     @RequestBody UpdateGearDto updateGearDto) {
-        return gearService
-                .partialUpdate(id, updateGearDto)
-                .map(rider -> new ResponseEntity<>(rider, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        try {
+            return new ResponseEntity<>(new ApiResponse("success", gearService.partialUpdate(id, updateGearDto)), HttpStatus.OK);
+        } catch (ResourceNotFoundException | UpdateIdNotEqualGivenException e) {
+           return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping(path = "/gears/{id}")
-    public ResponseEntity<GetGearDto> delete(@PathVariable("id") Long id) {
-        if (!gearService.delete(id)) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<ApiResponse> delete(@PathVariable("id") Long id) {
+        try {
+            gearService.delete(id);
+            return new ResponseEntity<>(new ApiResponse("success", null), HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping(path = "/gears/{id}/delete")
-    public ResponseEntity<GetGearDto> softDelete(@PathVariable("id") Long id) {
-        return gearService
-                .softDelete(id)
-                .map(getGearDto -> new ResponseEntity<>(getGearDto, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<ApiResponse> softDelete(@PathVariable("id") Long id) {
+        try {
+            return new ResponseEntity<>(new ApiResponse("successs",gearService.softDelete(id)), HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);
+        }
     }
 }
