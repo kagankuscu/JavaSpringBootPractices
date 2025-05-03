@@ -11,17 +11,17 @@ public interface RiderService {
 
     List<GetRiderDto> findAll();
 
-    Optional<GetRiderDto> findById(Long id);
+    GetRiderDto findById(Long id);
 
     GetRiderDto create(AddRiderDto riderDto);
 
     List<GetRiderDto> createList(List<AddRiderDto> riderDtos);
 
-    Optional<GetRiderDto> update(Long id, UpdateRiderDto updateRiderDto);
+    GetRiderDto update(Long id, UpdateRiderDto updateRiderDto);
 
-    Optional<GetRiderDto> partialUpdate(Long id, UpdateRiderDto updateRiderDto);
+    GetRiderDto partialUpdate(Long id, UpdateRiderDto updateRiderDto);
 
-    boolean delete(Long id);
+    void delete(Long id);
 
-    Optional<GetRiderDto> softDelete(Long id);
+    GetRiderDto softDelete(Long id);
 }

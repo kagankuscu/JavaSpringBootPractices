@@ -3,8 +3,12 @@ package com.cycling.stats.controller;
 import com.cycling.stats.domain.dtos.riderDtos.AddRiderDto;
 import com.cycling.stats.domain.dtos.riderDtos.GetRiderDto;
 import com.cycling.stats.domain.dtos.riderDtos.UpdateRiderDto;
+import com.cycling.stats.exceptions.ResourceNotFoundException;
+import com.cycling.stats.exceptions.UpdateIdNotEqualGivenException;
+import com.cycling.stats.response.ApiResponse;
 import com.cycling.stats.services.RiderService;
 import lombok.AllArgsConstructor;
+import org.hibernate.sql.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,59 +22,92 @@ public class RiderController {
     private final RiderService riderService;
 
     @GetMapping(path = "/riders")
-    public List<GetRiderDto> findAll() {
-        return riderService.findAll();
+    public ResponseEntity<ApiResponse> findAll() {
+        return new ResponseEntity<>(new ApiResponse("success", riderService.findAll()), HttpStatus.OK);
     }
 
     @GetMapping(path = "/riders/{id}")
-    public ResponseEntity<GetRiderDto> findById(@PathVariable("id") Long id) {
-        return riderService
-                .findById(id)
-                .map(rider -> { return new ResponseEntity<>(rider, HttpStatus.OK); })
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<ApiResponse> findById(@PathVariable("id") Long id) {
+        try {
+           return new ResponseEntity<>(new ApiResponse("success", riderService.findById(id)), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping(path = "/riders")
-    public ResponseEntity<GetRiderDto> create(@RequestBody AddRiderDto riderDto) {
-        return new ResponseEntity<>(riderService.create(riderDto), HttpStatus.CREATED);
+    public ResponseEntity<ApiResponse> create(@RequestBody AddRiderDto riderDto) {
+        try {
+            return new ResponseEntity<>(new ApiResponse("success", riderService.create(riderDto)),
+                    HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse("error", null), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping(path = "/riders/list")
-    public ResponseEntity<List<GetRiderDto>> create(@RequestBody List<AddRiderDto> riderDtos) {
-        return new ResponseEntity<>(riderService.createList(riderDtos), HttpStatus.CREATED);
+    public ResponseEntity<ApiResponse> create(@RequestBody List<AddRiderDto> riderDtos) {
+        try {
+            return new ResponseEntity<>(new ApiResponse("success", riderService.createList(riderDtos)),
+                    HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse("error", null), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping(path = "/riders/{id}")
-    public ResponseEntity<GetRiderDto> update(@PathVariable("id") Long id,
+    public ResponseEntity<ApiResponse> update(@PathVariable("id") Long id,
                                               @RequestBody UpdateRiderDto updateRiderDto) {
-        return riderService
-                .update(id, updateRiderDto)
-                .map(rider -> new ResponseEntity<>(rider, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        try {
+            return new ResponseEntity<>(
+                    new ApiResponse("success", riderService.update(id, updateRiderDto)), HttpStatus.OK
+            );
+        } catch (ResourceNotFoundException | UpdateIdNotEqualGivenException e) {
+            return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);
+        }
     }
 
     @PatchMapping(path = "/riders/{id}")
-    public ResponseEntity<GetRiderDto> partialUpdate(@PathVariable("id") Long id,
+    public ResponseEntity<ApiResponse> partialUpdate(@PathVariable("id") Long id,
                                                      @RequestBody UpdateRiderDto updateRiderDto) {
-        return riderService
-                .partialUpdate(id, updateRiderDto)
-                .map(rider -> new ResponseEntity<>(rider, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        try {
+            return new ResponseEntity<>(
+                    new ApiResponse("success", riderService.partialUpdate(id, updateRiderDto)),
+                    HttpStatus.OK
+            );
+        } catch (ResourceNotFoundException | UpdateIdNotEqualGivenException e) {
+            return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping(path = "/riders/{id}")
-    public ResponseEntity<GetRiderDto> delete(@PathVariable("id") Long id) {
-        if (!riderService.delete(id)) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<ApiResponse> delete(@PathVariable("id") Long id) {
+        try {
+            riderService.delete(id);
+            return new ResponseEntity<>(
+                    new ApiResponse("success", null),
+                    HttpStatus.OK
+            );
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(
+                    new ApiResponse(e.getMessage(), null),
+                    HttpStatus.NOT_FOUND
+            );
         }
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping(path = "/riders/{id}/delete")
-    public ResponseEntity<GetRiderDto> softDelete(@PathVariable("id") Long id) {
-        return riderService
-                .softDelete(id)
-                .map(riderDto -> new ResponseEntity<>(riderDto, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<ApiResponse> softDelete(@PathVariable("id") Long id) {
+        try {
+            return new ResponseEntity<>(
+                    new ApiResponse("success", riderService.softDelete(id)),
+                    HttpStatus.OK
+            );
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(
+                    new ApiResponse(e.getMessage(), null),
+                    HttpStatus.NOT_FOUND
+            );
+        }
     }
 }
