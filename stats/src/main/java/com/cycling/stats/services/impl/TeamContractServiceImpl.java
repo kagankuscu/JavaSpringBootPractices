@@ -5,14 +5,14 @@ import com.cycling.stats.domain.dtos.teamContractDtos.GetTeamContractDto;
 import com.cycling.stats.domain.dtos.teamContractDtos.UpdateTeamContractDto;
 import com.cycling.stats.domain.entities.Rider;
 import com.cycling.stats.domain.entities.TeamContract;
+import com.cycling.stats.exceptions.ResourceNotFoundException;
+import com.cycling.stats.exceptions.UpdateIdNotEqualGivenException;
 import com.cycling.stats.mappers.Mapper;
 import com.cycling.stats.repositories.TeamContractRepository;
 import com.cycling.stats.services.TeamContractService;
 import lombok.AllArgsConstructor;
-import org.hibernate.sql.Update;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,11 +37,12 @@ public class TeamContractServiceImpl implements TeamContractService {
     }
 
     @Override
-    public Optional<GetTeamContractDto> findById(Long id) {
+    public GetTeamContractDto findById(Long id) {
         return teamContractRepository
                 .findById(id)
                 .filter(teamContract -> !teamContract.getDeleted())
-                .map(mapper::mapFrom);
+                .map(mapper::mapFrom)
+                .orElseThrow(() -> new ResourceNotFoundException("TeamContract Not Found. Id: " + id));
     }
 
     @Override
@@ -71,37 +72,59 @@ public class TeamContractServiceImpl implements TeamContractService {
     }
 
     @Override
-    public Optional<GetTeamContractDto> update(Long id, UpdateTeamContractDto updateTeamContractDto) {
-        updateTeamContractDto.setId(id);
-        Optional<TeamContract> contractOptional = teamContractRepository
-                .findById(id)
-                .filter(tc -> !tc.getDeleted());
+    public GetTeamContractDto update(Long id, UpdateTeamContractDto updateTeamContractDto) {
+        if (!id.equals(updateTeamContractDto.getId()))
+            throw new UpdateIdNotEqualGivenException("Given id: "
+                    + id
+                    + " Body id: " + updateTeamContractDto.getId() + " is not equals.");
 
-        if (contractOptional.isEmpty()) {
-            return Optional.empty();
-        }
+        teamContractRepository
+                .findById(id)
+                .filter(tc -> !tc.getDeleted())
+                .orElseThrow(() -> new ResourceNotFoundException("TeamContract Not Found. Id: " + id));
+
         TeamContract teamContract = updateMapper.mapTo(updateTeamContractDto);
         teamContract.setRiders(setRiders(updateTeamContractDto.getRiderIds()));
 
-        return Optional.ofNullable(mapper.mapFrom(teamContractRepository.save(teamContract)));
+        return mapper.mapFrom(teamContractRepository.save(teamContract));
     }
 
     @Override
-    public Optional<GetTeamContractDto> partialUpdate(Long id, UpdateTeamContractDto updateTeamContractDto) {
-        updateTeamContractDto.setId(id);
-        Optional<TeamContract> contractOptional = teamContractRepository
-                .findById(id)
-                .filter(tc -> !tc.getDeleted());
+    public GetTeamContractDto partialUpdate(Long id, UpdateTeamContractDto updateTeamContractDto) {
+        if (!id.equals(updateTeamContractDto.getId()))
+            throw new UpdateIdNotEqualGivenException("Given id: "
+                    + id
+                    + " Body id: " + updateTeamContractDto.getId() + " is not equals.");
 
-        return contractOptional.flatMap(teamContract -> teamContractRepository
+        return teamContractRepository
+                    .findById(id)
+                    .map(tc -> {
+                        Optional.ofNullable(updateTeamContractDto.getName()).ifPresent(tc::setName);
+                        Optional.ofNullable(updateTeamContractDto.getYear()).ifPresent(tc::setYear);
+                        Optional.ofNullable(updateTeamContractDto.getRiderIds()).ifPresent(ids -> {
+                            tc.setRiders(setRiders(ids));
+                        });
+                        return mapper.mapFrom(teamContractRepository.save(tc));
+                    })
+                .orElseThrow(() -> new ResourceNotFoundException("TeamContract Not Found. Id: " + id));
+    }
+
+    @Override
+    public void delete(Long id) {
+        if (!teamContractRepository.existsById(id)) {
+            throw new ResourceNotFoundException("TeamContract Not Found. Id: " + id);
+        }
+
+        teamContractRepository.deleteById(id);
+    }
+
+    @Override
+    public GetTeamContractDto softDelete(Long id) {
+        teamContractRepository.softDelete(id);
+        return teamContractRepository
                 .findById(id)
-                .map(tc -> {
-                    Optional.ofNullable(updateTeamContractDto.getName()).ifPresent(tc::setName);
-                    Optional.ofNullable(updateTeamContractDto.getYear()).ifPresent(tc::setYear);
-                    teamContract.setRiders(setRiders(updateTeamContractDto.getRiderIds()));
-                    Optional.ofNullable(teamContract.getRiders()).ifPresent(tc::setRiders);
-                    return mapper.mapFrom(teamContractRepository.save(tc));
-                }));
+                .map(mapper::mapFrom)
+                .orElseThrow(() -> new ResourceNotFoundException("TeamContract Not Found. Id: " + id));
     }
 
     private List<Rider> setRiders(List<Long> riderIds) {
@@ -116,26 +139,4 @@ public class TeamContractServiceImpl implements TeamContractService {
         }
         return riders;
     }
-
-    @Override
-    public boolean delete(Long id) {
-        if (!teamContractRepository.existsById(id)) {
-            return false;
-        }
-
-        teamContractRepository.deleteById(id);
-        return true;
-    }
-
-    @Override
-    public Optional<GetTeamContractDto> softDelete(Long id) {
-        if (!teamContractRepository.existsById(id)) {
-            return Optional.empty();
-        }
-        teamContractRepository.softDelete(id);
-        return teamContractRepository
-                .findById(id)
-                .map(mapper::mapFrom);
-    }
-
 }
