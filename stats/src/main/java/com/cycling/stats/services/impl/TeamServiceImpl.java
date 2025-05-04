@@ -3,8 +3,12 @@ package com.cycling.stats.services.impl;
 import com.cycling.stats.domain.dtos.teamDtos.AddTeamDto;
 import com.cycling.stats.domain.dtos.teamDtos.GetTeamDto;
 import com.cycling.stats.domain.dtos.teamDtos.UpdateTeamDto;
+import com.cycling.stats.domain.entities.Gear;
 import com.cycling.stats.domain.entities.Team;
+import com.cycling.stats.exceptions.ResourceNotFoundException;
+import com.cycling.stats.exceptions.UpdateIdNotEqualGivenException;
 import com.cycling.stats.mappers.Mapper;
+import com.cycling.stats.repositories.GearRepository;
 import com.cycling.stats.repositories.TeamRepository;
 import com.cycling.stats.services.TeamService;
 import lombok.AllArgsConstructor;
@@ -18,6 +22,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class TeamServiceImpl implements TeamService {
     private final TeamRepository teamRepository;
+    private final GearRepository gearRepository;
     private final Mapper<Team, GetTeamDto> mapper;
     private final Mapper<Team, AddTeamDto> addMapper;
     private final Mapper<Team, UpdateTeamDto> updateMapper;
@@ -32,11 +37,12 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public Optional<GetTeamDto> findById(Long id) {
+    public GetTeamDto findById(Long id) {
         return teamRepository
                 .findById(id)
                 .filter(team -> !team.getDeleted())
-                .map(mapper::mapFrom);
+                .map(mapper::mapFrom)
+                .orElseThrow(() -> new ResourceNotFoundException("Team Not Found. Id: " + id));
     }
 
     @Override
@@ -59,22 +65,24 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public Optional<GetTeamDto> update(Long id, UpdateTeamDto updateTeamDto) {
-        updateTeamDto.setId(id);
-        if (!teamRepository.existsById(id)) {
-            return Optional.empty();
-        }
-        Team team = updateMapper.mapTo(updateTeamDto);
+    public GetTeamDto update(Long id, UpdateTeamDto updateTeamDto) {
+        if (!id.equals(updateTeamDto.getId()))
+            throw new UpdateIdNotEqualGivenException("Given id: "
+                    + id
+                    + " Body id: " + updateTeamDto.getId() + " is not equals.");
 
-        return Optional.ofNullable(mapper.mapFrom(teamRepository.save(team)));
+        if (!teamRepository.existsById(id))
+            throw new ResourceNotFoundException("Team Not Found. Id: " + id);
+
+        Team team = updateMapper.mapTo(updateTeamDto);
+        return mapper.mapFrom(teamRepository.save(team));
     }
 
     @Override
-    public Optional<GetTeamDto> partialUpdate(Long id, UpdateTeamDto updateTeamDto) {
-        updateTeamDto.setId(id);
-        if (!teamRepository.existsById(id)) {
-            return Optional.empty();
-        }
+    public GetTeamDto partialUpdate(Long id, UpdateTeamDto updateTeamDto) {
+        if (!id.equals(updateTeamDto.getId()))
+            throw new ResourceNotFoundException("Team Not Found. Id: " + id);
+
         return teamRepository
                 .findById(id)
                 .map(team -> {
@@ -86,28 +94,25 @@ public class TeamServiceImpl implements TeamService {
                     Optional.ofNullable(updateTeamDto.getYearFounded()).ifPresent(team::setYearFounded);
                     team.setModifiedDate(LocalDateTime.now());
                     return mapper.mapFrom(teamRepository.save(team));
-                });
+                })
+                .orElseThrow(() -> new ResourceNotFoundException(""));
     }
 
     @Override
-    public boolean delete(Long id) {
+    public void delete(Long id) {
         if (!teamRepository.existsById(id)) {
-            return false;
+            throw new ResourceNotFoundException("Team Not Found. Id: " + id);
         }
 
         teamRepository.deleteById(id);
-        return true;
     }
 
     @Override
-    public Optional<GetTeamDto> softDelete(Long id) {
-        if (!teamRepository.existsById(id)) {
-            return Optional.empty();
-        }
-
+    public GetTeamDto softDelete(Long id) {
         teamRepository.softDelete(id);
         return teamRepository
                 .findById(id)
-                .map(mapper::mapFrom);
+                .map(mapper::mapFrom)
+                .orElseThrow(() -> new ResourceNotFoundException("Team Not Found. Id: " + id));
     }
 }

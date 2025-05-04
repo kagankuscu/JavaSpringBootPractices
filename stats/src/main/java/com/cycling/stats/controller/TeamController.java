@@ -3,8 +3,12 @@ package com.cycling.stats.controller;
 import com.cycling.stats.domain.dtos.teamDtos.AddTeamDto;
 import com.cycling.stats.domain.dtos.teamDtos.GetTeamDto;
 import com.cycling.stats.domain.dtos.teamDtos.UpdateTeamDto;
+import com.cycling.stats.exceptions.ResourceNotFoundException;
+import com.cycling.stats.exceptions.UpdateIdNotEqualGivenException;
+import com.cycling.stats.response.ApiResponse;
 import com.cycling.stats.services.TeamService;
 import lombok.AllArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,58 +23,122 @@ public class TeamController {
     private final TeamService teamService;
 
     @GetMapping(path = "")
-    public List<GetTeamDto> findAll() {
-        return teamService.findAll();
+    public ResponseEntity<ApiResponse> findAll() {
+        return new ResponseEntity<>(
+                new ApiResponse("success", teamService.findAll()),
+                HttpStatus.OK
+        );
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<GetTeamDto> getTeam(@PathVariable("id") Long id) {
-        return teamService
-                .findById(id)
-                .map(team -> new ResponseEntity<>(team, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<ApiResponse> getTeam(@PathVariable("id") Long id) {
+        try {
+            return new ResponseEntity<>(
+                    new ApiResponse("success", teamService.findById(id)),
+                    HttpStatus.OK
+            );
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(
+                    new ApiResponse(e.getMessage(), null),
+                    HttpStatus.NOT_FOUND
+            );
+        }
     }
 
     @PostMapping(path = "")
-    public ResponseEntity<GetTeamDto> create(@RequestBody AddTeamDto teamDto) {
-        return new ResponseEntity<>(teamService.create(teamDto), HttpStatus.CREATED);
+    public ResponseEntity<ApiResponse> create(@RequestBody AddTeamDto teamDto) {
+        try {
+            return new ResponseEntity<>(
+                    new ApiResponse("success", teamService.create(teamDto)),
+                    HttpStatus.OK
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse(e.getMessage(), null),
+                    HttpStatus.NOT_FOUND
+            );
+        }
     }
 
     @PostMapping(path = "/list")
-    public ResponseEntity<List<GetTeamDto>> create(@RequestBody List<AddTeamDto> teamsDto) {
-        return new ResponseEntity<>(teamService.createList(teamsDto), HttpStatus.CREATED);
+    public ResponseEntity<ApiResponse> create(@RequestBody List<AddTeamDto> teamDtos) {
+        try {
+            return new ResponseEntity<>(
+                    new ApiResponse("success", teamService.createList(teamDtos)),
+                    HttpStatus.OK
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse(e.getMessage(), null),
+                    HttpStatus.NOT_FOUND
+            );
+        }
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<GetTeamDto> update(@PathVariable("id") Long id,
+    public ResponseEntity<ApiResponse> update(@PathVariable("id") Long id,
                                              @RequestBody UpdateTeamDto updateTeamDto) {
-        return teamService
-                .update(id, updateTeamDto)
-                .map(team -> new ResponseEntity<>(team, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        try {
+            return new ResponseEntity<>(
+                    new ApiResponse("success", teamService.update(id, updateTeamDto)),
+                    HttpStatus.OK
+            );
+        } catch (ResourceNotFoundException | UpdateIdNotEqualGivenException e) {
+            return new ResponseEntity<>(
+                    new ApiResponse(e.getMessage(), null),
+                    HttpStatus.NOT_FOUND
+            );
+        }
     }
 
     @PatchMapping(path = "/{id}")
-    public ResponseEntity<GetTeamDto> partialUpdate(@PathVariable("id") Long id,
+    public ResponseEntity<ApiResponse> partialUpdate(@PathVariable("id") Long id,
                                                     @RequestBody UpdateTeamDto updateTeamDto) {
-        return teamService
-                .partialUpdate(id, updateTeamDto)
-                .map(team -> new ResponseEntity<>(team, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-    @DeleteMapping(path = "/{id}")
-    public ResponseEntity<GetTeamDto> delete(@PathVariable("id") Long id) {
-        if (!teamService.delete(id)) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            return new ResponseEntity<>(
+                    new ApiResponse("success", teamService.partialUpdate(id, updateTeamDto)),
+                    HttpStatus.OK
+            );
+        } catch (ResourceNotFoundException | UpdateIdNotEqualGivenException e) {
+            return new ResponseEntity<>(
+                    new ApiResponse(e.getMessage(), null),
+                    HttpStatus.NOT_FOUND
+            );
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<ApiResponse> delete(@PathVariable("id") Long id) {
+        try {
+            teamService.delete(id);
+            return new ResponseEntity<>(
+                    new ApiResponse("success", null),
+                    HttpStatus.OK
+            );
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            e.getMessage(), null
+                    ),
+                    HttpStatus.NOT_FOUND
+            );
+        }
     }
 
     @PutMapping(path = "/{id}/delete")
-    public ResponseEntity<GetTeamDto> softDelete(@PathVariable("id") Long id) {
-        return teamService
-                .softDelete(id)
-                .map(teamDto -> new ResponseEntity<>(teamDto, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<ApiResponse> softDelete(@PathVariable("id") Long id) {
+        try {
+            return new ResponseEntity<>(
+                    new ApiResponse("success", teamService.softDelete(id)),
+                    HttpStatus.OK
+            );
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            e.getMessage(), null
+                    ),
+                    HttpStatus.NOT_FOUND
+            );
+        }
     }
 }

@@ -30,6 +30,6 @@ public class Rider extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "team_id")
     private Team team;
-    @ManyToMany(mappedBy = "riders")
+    @ManyToMany(mappedBy = "riders", cascade = CascadeType.ALL)
     private List<TeamContract> teamContracts;
 }

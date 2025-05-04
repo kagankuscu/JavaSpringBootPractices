@@ -10,17 +10,17 @@ import java.util.Optional;
 public interface TeamService {
     List<GetTeamDto> findAll();
 
-    Optional<GetTeamDto> findById(Long id);
+    GetTeamDto findById(Long id);
 
     GetTeamDto create(AddTeamDto addTeamDto);
 
     List<GetTeamDto> createList(List<AddTeamDto> addTeamDtos);
 
-    Optional<GetTeamDto> update(Long id, UpdateTeamDto updateTeamDto);
+    GetTeamDto update(Long id, UpdateTeamDto updateTeamDto);
 
-    Optional<GetTeamDto> partialUpdate(Long id, UpdateTeamDto updateTeamDto);
+    GetTeamDto partialUpdate(Long id, UpdateTeamDto updateTeamDto);
 
-    boolean delete(Long id);
+    void delete(Long id);
 
-    Optional<GetTeamDto> softDelete(Long id);
+    GetTeamDto softDelete(Long id);
 }

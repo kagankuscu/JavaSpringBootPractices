@@ -28,7 +28,10 @@ public class Team extends BaseEntity {
     private String jerseyImg;
     private Long yearFounded;
 
-    @OneToMany(mappedBy = "team")
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
     private List<Rider> riders;
+
+    @OneToOne(mappedBy = "team", cascade = CascadeType.ALL)
+    private Gear gear;
 
 }

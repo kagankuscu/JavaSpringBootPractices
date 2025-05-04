@@ -20,4 +20,6 @@ public interface GearRepository extends JpaRepository<Gear, Long> {
     @Transactional
     @Query("UPDATE Gear g SET g.deleted = true WHERE g.id=:id")
     void softDelete(Long id);
+
+    Gear findByTeamId(Long id);
 }
