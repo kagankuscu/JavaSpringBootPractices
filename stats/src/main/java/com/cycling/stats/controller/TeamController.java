@@ -32,113 +32,60 @@ public class TeamController {
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<ApiResponse> getTeam(@PathVariable("id") Long id) {
-        try {
-            return new ResponseEntity<>(
-                    new ApiResponse("success", teamService.findById(id)),
-                    HttpStatus.OK
-            );
-        } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(
-                    new ApiResponse(e.getMessage(), null),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        return new ResponseEntity<>(
+                new ApiResponse("success", teamService.findById(id)),
+                HttpStatus.OK
+        );
     }
 
     @PostMapping(path = "")
     public ResponseEntity<ApiResponse> create(@RequestBody AddTeamDto teamDto) {
-        try {
-            return new ResponseEntity<>(
-                    new ApiResponse("success", teamService.create(teamDto)),
-                    HttpStatus.OK
-            );
-        } catch (Exception e) {
-            return new ResponseEntity<>(
-                    new ApiResponse(e.getMessage(), null),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        return new ResponseEntity<>(
+                new ApiResponse("success", teamService.create(teamDto)),
+                HttpStatus.OK
+        );
     }
 
     @PostMapping(path = "/list")
     public ResponseEntity<ApiResponse> create(@RequestBody List<AddTeamDto> teamDtos) {
-        try {
-            return new ResponseEntity<>(
-                    new ApiResponse("success", teamService.createList(teamDtos)),
-                    HttpStatus.OK
-            );
-        } catch (Exception e) {
-            return new ResponseEntity<>(
-                    new ApiResponse(e.getMessage(), null),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        return new ResponseEntity<>(
+                new ApiResponse("success", teamService.createList(teamDtos)),
+                HttpStatus.OK
+        );
     }
 
     @PutMapping(path = "/{id}")
     public ResponseEntity<ApiResponse> update(@PathVariable("id") Long id,
                                              @RequestBody UpdateTeamDto updateTeamDto) {
-        try {
-            return new ResponseEntity<>(
-                    new ApiResponse("success", teamService.update(id, updateTeamDto)),
-                    HttpStatus.OK
-            );
-        } catch (ResourceNotFoundException | UpdateIdNotEqualGivenException e) {
-            return new ResponseEntity<>(
-                    new ApiResponse(e.getMessage(), null),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        return new ResponseEntity<>(
+                new ApiResponse("success", teamService.update(id, updateTeamDto)),
+                HttpStatus.OK
+        );
     }
 
     @PatchMapping(path = "/{id}")
     public ResponseEntity<ApiResponse> partialUpdate(@PathVariable("id") Long id,
                                                     @RequestBody UpdateTeamDto updateTeamDto) {
-        try {
-            return new ResponseEntity<>(
-                    new ApiResponse("success", teamService.partialUpdate(id, updateTeamDto)),
-                    HttpStatus.OK
-            );
-        } catch (ResourceNotFoundException | UpdateIdNotEqualGivenException e) {
-            return new ResponseEntity<>(
-                    new ApiResponse(e.getMessage(), null),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        return new ResponseEntity<>(
+                new ApiResponse("success", teamService.partialUpdate(id, updateTeamDto)),
+                HttpStatus.OK
+        );
     }
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<ApiResponse> delete(@PathVariable("id") Long id) {
-        try {
-            teamService.delete(id);
-            return new ResponseEntity<>(
-                    new ApiResponse("success", null),
-                    HttpStatus.OK
-            );
-        } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(
-                    new ApiResponse(
-                            e.getMessage(), null
-                    ),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        teamService.delete(id);
+        return new ResponseEntity<>(
+                new ApiResponse("success", null),
+                HttpStatus.OK
+        );
     }
 
     @PutMapping(path = "/{id}/delete")
     public ResponseEntity<ApiResponse> softDelete(@PathVariable("id") Long id) {
-        try {
-            return new ResponseEntity<>(
-                    new ApiResponse("success", teamService.softDelete(id)),
-                    HttpStatus.OK
-            );
-        } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(
-                    new ApiResponse(
-                            e.getMessage(), null
-                    ),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        return new ResponseEntity<>(
+                new ApiResponse("success", teamService.softDelete(id)),
+                HttpStatus.OK
+        );
     }
 }

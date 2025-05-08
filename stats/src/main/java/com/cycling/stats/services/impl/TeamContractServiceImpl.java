@@ -42,7 +42,7 @@ public class TeamContractServiceImpl implements TeamContractService {
                 .findById(id)
                 .filter(teamContract -> !teamContract.getDeleted())
                 .map(mapper::mapFrom)
-                .orElseThrow(() -> new ResourceNotFoundException("TeamContract Not Found. Id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("team", id));
     }
 
     @Override
@@ -74,14 +74,12 @@ public class TeamContractServiceImpl implements TeamContractService {
     @Override
     public GetTeamContractDto update(Long id, UpdateTeamContractDto updateTeamContractDto) {
         if (!id.equals(updateTeamContractDto.getId()))
-            throw new UpdateIdNotEqualGivenException("Given id: "
-                    + id
-                    + " Body id: " + updateTeamContractDto.getId() + " is not equals.");
+            throw new UpdateIdNotEqualGivenException(id, updateTeamContractDto.getId());
 
         teamContractRepository
                 .findById(id)
                 .filter(tc -> !tc.getDeleted())
-                .orElseThrow(() -> new ResourceNotFoundException("TeamContract Not Found. Id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("team contract", id));
 
         TeamContract teamContract = updateMapper.mapTo(updateTeamContractDto);
         teamContract.setRiders(setRiders(updateTeamContractDto.getRiderIds()));
@@ -92,9 +90,7 @@ public class TeamContractServiceImpl implements TeamContractService {
     @Override
     public GetTeamContractDto partialUpdate(Long id, UpdateTeamContractDto updateTeamContractDto) {
         if (!id.equals(updateTeamContractDto.getId()))
-            throw new UpdateIdNotEqualGivenException("Given id: "
-                    + id
-                    + " Body id: " + updateTeamContractDto.getId() + " is not equals.");
+            throw new UpdateIdNotEqualGivenException(id, updateTeamContractDto.getId());
 
         return teamContractRepository
                     .findById(id)
@@ -106,13 +102,13 @@ public class TeamContractServiceImpl implements TeamContractService {
                         });
                         return mapper.mapFrom(teamContractRepository.save(tc));
                     })
-                .orElseThrow(() -> new ResourceNotFoundException("TeamContract Not Found. Id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("team contract", id));
     }
 
     @Override
     public void delete(Long id) {
         if (!teamContractRepository.existsById(id)) {
-            throw new ResourceNotFoundException("TeamContract Not Found. Id: " + id);
+            throw new ResourceNotFoundException("team contract", id);
         }
 
         teamContractRepository.deleteById(id);
@@ -124,7 +120,7 @@ public class TeamContractServiceImpl implements TeamContractService {
         return teamContractRepository
                 .findById(id)
                 .map(mapper::mapFrom)
-                .orElseThrow(() -> new ResourceNotFoundException("TeamContract Not Found. Id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("team contract", id));
     }
 
     private List<Rider> setRiders(List<Long> riderIds) {

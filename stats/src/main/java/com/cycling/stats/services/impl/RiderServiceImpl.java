@@ -11,10 +11,8 @@ import com.cycling.stats.mappers.Mapper;
 import com.cycling.stats.repositories.RiderRepository;
 import com.cycling.stats.services.RiderService;
 import lombok.AllArgsConstructor;
-import org.apache.tomcat.util.scan.ReferenceCountedJar;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,7 +39,7 @@ public class RiderServiceImpl implements RiderService {
                 .findById(id)
                 .filter(rider -> !rider.getDeleted())
                 .map(mapper::mapFrom)
-                .orElseThrow(() -> new ResourceNotFoundException("Rider Not Found. Id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("rider", id));
     }
 
     @Override
@@ -77,14 +75,12 @@ public class RiderServiceImpl implements RiderService {
     @Override
     public GetRiderDto update(Long id, UpdateRiderDto updateRiderDto) {
         if (!id.equals(updateRiderDto.getId()))
-            throw new UpdateIdNotEqualGivenException("Given id: "
-                    + id
-                    + " Body id: " + updateRiderDto.getId() + " is not equals.");
+            throw new UpdateIdNotEqualGivenException(id, updateRiderDto.getId());
 
         riderRepository
                 .findById(updateRiderDto.getId())
                 .filter(r -> !r.getDeleted())
-                .orElseThrow(() -> new ResourceNotFoundException("Rider Not Found. Id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("rider", id));
 
         Rider rider = updateMapper.mapTo(updateRiderDto);
         if (updateRiderDto.getTeamId() != null) {
@@ -101,9 +97,7 @@ public class RiderServiceImpl implements RiderService {
     @Override
     public GetRiderDto partialUpdate(Long id, UpdateRiderDto updateRiderDto) {
         if (!id.equals(updateRiderDto.getId()))
-            throw new UpdateIdNotEqualGivenException("Given id: "
-                    + id
-                    + " Body id: " + updateRiderDto.getId() + " is not equals.");
+            throw new UpdateIdNotEqualGivenException(id, updateRiderDto.getId());
 
         return riderRepository
                 .findById(id)
@@ -120,13 +114,13 @@ public class RiderServiceImpl implements RiderService {
                        rider.setTeam(team);
                     });
                     return mapper.mapFrom(riderRepository.save(rider));
-                }).orElseThrow(() -> new ResourceNotFoundException("Rider Not Found. Id: " + id));
+                }).orElseThrow(() -> new ResourceNotFoundException("rider", id));
     }
 
     @Override
     public void delete(Long id) {
         if (!riderRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Rider Not Found. Id: " + id);
+            throw new ResourceNotFoundException("rider", id);
         }
 
         riderRepository.deleteById(id);
@@ -138,6 +132,6 @@ public class RiderServiceImpl implements RiderService {
         return riderRepository
                 .findById(id)
                 .map(mapper::mapFrom)
-                .orElseThrow(() -> new ResourceNotFoundException("Rider Not Found. Id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("rider", id));
     }
 }

@@ -3,7 +3,6 @@ package com.cycling.stats.services.impl;
 import com.cycling.stats.domain.dtos.teamDtos.AddTeamDto;
 import com.cycling.stats.domain.dtos.teamDtos.GetTeamDto;
 import com.cycling.stats.domain.dtos.teamDtos.UpdateTeamDto;
-import com.cycling.stats.domain.entities.Gear;
 import com.cycling.stats.domain.entities.Team;
 import com.cycling.stats.exceptions.ResourceNotFoundException;
 import com.cycling.stats.exceptions.UpdateIdNotEqualGivenException;
@@ -42,7 +41,7 @@ public class TeamServiceImpl implements TeamService {
                 .findById(id)
                 .filter(team -> !team.getDeleted())
                 .map(mapper::mapFrom)
-                .orElseThrow(() -> new ResourceNotFoundException("Team Not Found. Id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("team", id));
     }
 
     @Override
@@ -67,12 +66,10 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public GetTeamDto update(Long id, UpdateTeamDto updateTeamDto) {
         if (!id.equals(updateTeamDto.getId()))
-            throw new UpdateIdNotEqualGivenException("Given id: "
-                    + id
-                    + " Body id: " + updateTeamDto.getId() + " is not equals.");
+            throw new UpdateIdNotEqualGivenException(id, updateTeamDto.getId());
 
         if (!teamRepository.existsById(id))
-            throw new ResourceNotFoundException("Team Not Found. Id: " + id);
+            throw new ResourceNotFoundException("team", id);
 
         Team team = updateMapper.mapTo(updateTeamDto);
         return mapper.mapFrom(teamRepository.save(team));
@@ -81,7 +78,7 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public GetTeamDto partialUpdate(Long id, UpdateTeamDto updateTeamDto) {
         if (!id.equals(updateTeamDto.getId()))
-            throw new ResourceNotFoundException("Team Not Found. Id: " + id);
+            throw new ResourceNotFoundException("team", id);
 
         return teamRepository
                 .findById(id)
@@ -95,13 +92,13 @@ public class TeamServiceImpl implements TeamService {
                     team.setModifiedDate(LocalDateTime.now());
                     return mapper.mapFrom(teamRepository.save(team));
                 })
-                .orElseThrow(() -> new ResourceNotFoundException(""));
+                .orElseThrow(() -> new ResourceNotFoundException("team", id));
     }
 
     @Override
     public void delete(Long id) {
         if (!teamRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Team Not Found. Id: " + id);
+            throw new ResourceNotFoundException("team", id);
         }
 
         teamRepository.deleteById(id);
@@ -113,6 +110,6 @@ public class TeamServiceImpl implements TeamService {
         return teamRepository
                 .findById(id)
                 .map(mapper::mapFrom)
-                .orElseThrow(() -> new ResourceNotFoundException("Team Not Found. Id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("team", id));
     }
 }

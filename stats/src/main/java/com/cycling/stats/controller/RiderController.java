@@ -17,97 +17,63 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(path = "${api.prefix}")
+@RequestMapping(path = "${api.prefix}/riders")
 public class RiderController {
     private final RiderService riderService;
 
-    @GetMapping(path = "/riders")
+    @GetMapping(path = "")
     public ResponseEntity<ApiResponse> findAll() {
         return new ResponseEntity<>(new ApiResponse("success", riderService.findAll()), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/riders/{id}")
+    @GetMapping(path = "/{id}")
     public ResponseEntity<ApiResponse> findById(@PathVariable("id") Long id) {
-        try {
-           return new ResponseEntity<>(new ApiResponse("success", riderService.findById(id)), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);
-        }
+       return new ResponseEntity<>(new ApiResponse("success", riderService.findById(id)), HttpStatus.OK);
     }
 
-    @PostMapping(path = "/riders")
+    @PostMapping(path = "")
     public ResponseEntity<ApiResponse> create(@RequestBody AddRiderDto riderDto) {
-        try {
-            return new ResponseEntity<>(new ApiResponse("success", riderService.create(riderDto)),
-                    HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ApiResponse("error", null), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(new ApiResponse("success", riderService.create(riderDto)),
+                HttpStatus.CREATED);
     }
 
-    @PostMapping(path = "/riders/list")
+    @PostMapping(path = "/list")
     public ResponseEntity<ApiResponse> create(@RequestBody List<AddRiderDto> riderDtos) {
-        try {
-            return new ResponseEntity<>(new ApiResponse("success", riderService.createList(riderDtos)),
-                    HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ApiResponse("error", null), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(new ApiResponse("success", riderService.createList(riderDtos)),
+                HttpStatus.CREATED);
     }
 
-    @PutMapping(path = "/riders/{id}")
+    @PutMapping(path = "/{id}")
     public ResponseEntity<ApiResponse> update(@PathVariable("id") Long id,
                                               @RequestBody UpdateRiderDto updateRiderDto) {
-        try {
-            return new ResponseEntity<>(
-                    new ApiResponse("success", riderService.update(id, updateRiderDto)), HttpStatus.OK
-            );
-        } catch (ResourceNotFoundException | UpdateIdNotEqualGivenException e) {
-            return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(
+                new ApiResponse("success", riderService.update(id, updateRiderDto)), HttpStatus.OK
+        );
     }
 
-    @PatchMapping(path = "/riders/{id}")
+    @PatchMapping(path = "/{id}")
     public ResponseEntity<ApiResponse> partialUpdate(@PathVariable("id") Long id,
                                                      @RequestBody UpdateRiderDto updateRiderDto) {
-        try {
-            return new ResponseEntity<>(
-                    new ApiResponse("success", riderService.partialUpdate(id, updateRiderDto)),
-                    HttpStatus.OK
-            );
-        } catch (ResourceNotFoundException | UpdateIdNotEqualGivenException e) {
-            return new ResponseEntity<>(new ApiResponse(e.getMessage(), null), HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(
+                new ApiResponse("success", riderService.partialUpdate(id, updateRiderDto)),
+                HttpStatus.OK
+        );
     }
 
-    @DeleteMapping(path = "/riders/{id}")
+    @DeleteMapping(path = "/{id}")
     public ResponseEntity<ApiResponse> delete(@PathVariable("id") Long id) {
-        try {
             riderService.delete(id);
-            return new ResponseEntity<>(
-                    new ApiResponse("success", null),
-                    HttpStatus.OK
-            );
-        } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(
-                    new ApiResponse(e.getMessage(), null),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        return new ResponseEntity<>(
+                new ApiResponse("success", null),
+                HttpStatus.OK
+        );
     }
 
-    @PutMapping(path = "/riders/{id}/delete")
+    @PutMapping(path = "/{id}/delete")
     public ResponseEntity<ApiResponse> softDelete(@PathVariable("id") Long id) {
-        try {
-            return new ResponseEntity<>(
-                    new ApiResponse("success", riderService.softDelete(id)),
-                    HttpStatus.OK
-            );
-        } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(
-                    new ApiResponse(e.getMessage(), null),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        return new ResponseEntity<>(
+                new ApiResponse("success", riderService.softDelete(id)),
+                HttpStatus.OK
+        );
     }
 }
