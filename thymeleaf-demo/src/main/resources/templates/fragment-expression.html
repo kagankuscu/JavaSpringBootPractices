@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+    layout:decorate="~{layouts/main.html}">
+<head>
+    <link rel="stylesheet" th:href="@{/style.css}" href="style.css">
+    <title>Fragment Page</title>
+</head>
+<body>
+    <div layout:fragment="content">body part</div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en"
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/main.html}">
+
+<head>
+    <title>Home Page</title>
+</head>
+<body>
+    <div class="container" layout:fragment="content">
+        <h1 th:text="#{app.name}"></h1>
+        <h2 th:text="#{message.welcome}"></h2>
+    </div>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en"
+    xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/style.css}" href="style.css">
+    <title>Link Expression</title>
+</head>
+<body>
+    <a th:href="@{/hello-world}" href="">Hello World</a>
+    <p th:text="'Id: ' + ${id}"></p>
+    <p>Id: [[${id}]]</p>
+</body>
+</html>
