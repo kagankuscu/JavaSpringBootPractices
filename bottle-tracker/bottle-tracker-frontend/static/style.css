@@ -1,0 +1,99 @@
+html, body {
+    color: white;
+    background-color: #333;
+    height: 98vh;
+/*    width: 100vw;*/
+}
+
+h1, p {
+    padding: 0;
+    margin: 0;
+    line-height: 0.674 ;
+}
+
+.info {
+    display:flex;
+    justify-content: center;
+    align-items: flex-end;
+    margin-bottom: 5rem;
+}
+
+.info > p {
+    color: white;
+    font-size: 4.35rem;
+
+}
+
+.info > p.multiply {
+    font-size: 3.15rem;
+    margin-right: 0.7rem;
+    margin-left: 0.553rem;
+    color: white;
+}
+
+h1.count {
+    font-size: 10rem;
+}
+
+.body {
+    height: 75%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    text-align: center;
+    margin: 3rem auto;
+    padding: 0;
+    width: 100%;
+    max-width: 80%;
+}
+
+.btn-container {
+    margin: 1rem;
+}
+
+.btn {
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    padding: 1.25rem;
+    border-radius: 0.89rem;
+    border: none;
+    margin: 0 0.5rem;
+    transition: background-color 0.5s ease;
+}
+
+.btn.btn-add {
+    background-color: green;
+}
+
+.btn.btn-add:hover {
+    background-color: darkgreen;
+}
+
+.btn.btn-remove {
+    background-color: red;
+}
+
+.btn.btn-remove:hover {
+    background-color: darkred;
+}
+
+.btn.btn-remove.disable {
+    opacity: 0.5;
+}
+
+.btn.btn-remove.disable:hover {
+    background-color: red;
+    cursor: not-allowed;
+}
+
+.btn.btn-reset {
+    background-color: darkgray;
+}
+
+.btn.btn-reset:hover {
+    background-color: grey;
+}

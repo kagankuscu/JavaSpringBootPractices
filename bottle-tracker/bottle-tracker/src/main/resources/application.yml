@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: bottle-tracker
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bottle_tracker
+    username: postgres
+    password: JavaSpringBoot
+    driver-class-name: org.postgresql.Driver
+
